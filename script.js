@@ -1,31 +1,40 @@
-import { validarSecreto } from "https://desarrollo-aplicaciones.vercel.app/2024/code/validar-secreto.js";
-import { obtenerJson } from "https://desarrollo-aplicaciones.vercel.app/2024/code/obtener-json.js";
-import { calcularProximoFeriado } from "https://desarrollo-aplicaciones.vercel.app/2024/code/calcular-proximo-feriado.js";
+importar { Terminal } desde "@es-js/terminal"
+importar { obtenerJson } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/obtener-json.js"
+importar { validarSecreto } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/validar-secreto.js"
+importar { calcularProximoFeriado } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/calcular-proximo-feriado.js"
 
-const DNI = "45468644"; // Reemplazá por tu DNI si corresponde
+asincrono funcion inicio() {
+  Terminal.escribir("¡Hola! Ingresa la palabra secreta:")
 
-const boton = document.getElementById("btnConsultar");
-const secreto = document.getElementById("secreto");
-const resultado = document.getElementById("resultado");
+  var secreto = esperar Terminal.leer()
 
-boton.addEventListener("click", async () => {
-  const palabraSecreta = secreto.value.trim();
+  // Tu DNI
+  var dni = "45468644"
 
-  resultado.innerText = "Validando...";
-
-  const esValida = await validarSecreto(DNI, palabraSecreta);
-
-  if (!esValida) {
-    resultado.innerText = "Palabra secreta incorrecta.";
-    return;
+  si (esperar validarSecreto(dni, secreto)) {
+    esperar mostrarProximoFeriado()
+  } sino {
+    Terminal.escribir("❌ Palabra secreta inválida")
   }
 
-  const feriados = await obtenerJson(
-    "https://api.argentinadatos.com/v1/feriados/"
-  );
+  Terminal.escribir("")
+  Terminal.escribir("Presiona ENTER para volver a ingresar")
 
-  const proximo = calcularProximoFeriado(feriados);
+  esperar Terminal.leerEnter()
+  Terminal.limpiar()
 
-  resultado.innerText =
-    `Próximo feriado: ${proximo.fecha}\n${proximo.nombre}`;
-});
+  inicio()
+}
+
+asincrono funcion mostrarProximoFeriado() {
+  const feriados = esperar obtenerJson("https://api.argentinadatos.com/v1/feriados/")
+
+  const proximoFeriado = calcularProximoFeriado(feriados)
+
+  Terminal.escribir(" Próximo feriado en Argentina")
+  Terminal.escribir("Nombre: " + proximoFeriado.nombre)
+  Terminal.escribir("Fecha: " + proximoFeriado.fecha)
+}
+
+inicio()
+
