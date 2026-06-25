@@ -29,7 +29,7 @@ async function consultar() {
 
   resultado.innerText =
 `Proximo feriado: ${proximo.fecha}
-${proximo.nombre}
+ ${proximo.nombre}
 
 Presiona ENTER para volver a ingresar`;
 
