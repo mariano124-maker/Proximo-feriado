@@ -28,9 +28,26 @@ async function consultar() {
 
     resultado.innerText =
 `Próximo feriado: ${proximo.fecha}
-${proximo.nombre}`;
+${proximo.nombre}
 
+Presioná ENTER para volver a ingresar`;
 }
+let mostrarResultado = false;
+
+secreto.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+
+        if (mostrarResultado) {
+            secreto.value = "";
+            resultado.innerText = "";
+            mostrarResultado = false;
+            return;
+        }
+
+        consultar();
+        mostrarResultado = true;
+    }
+});
 
 secreto.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
