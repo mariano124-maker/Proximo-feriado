@@ -1,40 +1,39 @@
-importar { Terminal } desde "@es-js/terminal"
-importar { obtenerJson } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/obtener-json.js"
-importar { validarSecreto } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/validar-secreto.js"
-importar { calcularProximoFeriado } desde "https://desarrollo-aplicaciones.vercel.app/2024/code/calcular-proximo-feriado.js"
+import { validarSecreto } from "https://desarrollo-aplicaciones.vercel.app/2024/code/validar-secreto.js";
+import { obtenerJson } from "https://desarrollo-aplicaciones.vercel.app/2024/code/obtener-json.js";
+import { calcularProximoFeriado } from "https://desarrollo-aplicaciones.vercel.app/2024/code/calcular-proximo-feriado.js";
 
-asincrono funcion inicio() {
-  Terminal.escribir("¡Hola! Ingresa la palabra secreta:")
+const DNI = "45468644";
 
-  var secreto = esperar Terminal.leer()
+const secreto = document.getElementById("secreto");
+const resultado = document.getElementById("resultado");
 
-  // Tu DNI
-  var dni = "45468644"
+async function consultar() {
 
-  si (esperar validarSecreto(dni, secreto)) {
-    esperar mostrarProximoFeriado()
-  } sino {
-    Terminal.escribir("❌ Palabra secreta inválida")
-  }
+    const palabraSecreta = secreto.value.trim();
 
-  Terminal.escribir("")
-  Terminal.escribir("Presiona ENTER para volver a ingresar")
+    resultado.innerText = "Validando...";
 
-  esperar Terminal.leerEnter()
-  Terminal.limpiar()
+    const esValida = await validarSecreto(DNI, palabraSecreta);
 
-  inicio()
+    if (!esValida) {
+        resultado.innerText = "Palabra secreta incorrecta.";
+        return;
+    }
+
+    const feriados = await obtenerJson(
+        "https://api.argentinadatos.com/v1/feriados/"
+    );
+
+    const proximo = calcularProximoFeriado(feriados);
+
+    resultado.innerText =
+`Próximo feriado: ${proximo.fecha}
+${proximo.nombre}`;
+
 }
 
-asincrono funcion mostrarProximoFeriado() {
-  const feriados = esperar obtenerJson("https://api.argentinadatos.com/v1/feriados/")
-
-  const proximoFeriado = calcularProximoFeriado(feriados)
-
-  Terminal.escribir(" Próximo feriado en Argentina")
-  Terminal.escribir("Nombre: " + proximoFeriado.nombre)
-  Terminal.escribir("Fecha: " + proximoFeriado.fecha)
-}
-
-inicio()
-
+secreto.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        consultar();
+    }
+});
