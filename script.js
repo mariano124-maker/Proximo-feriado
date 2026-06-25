@@ -2,19 +2,21 @@ import { validarSecreto } from "https://desarrollo-aplicaciones.vercel.app/2024/
 import { obtenerJson } from "https://desarrollo-aplicaciones.vercel.app/2024/code/obtener-json.js";
 import { calcularProximoFeriado } from "https://desarrollo-aplicaciones.vercel.app/2024/code/calcular-proximo-feriado.js";
 
-const DNI = "45468644";
+const DNI = "45468644"; // Reemplazá por tu DNI si corresponde
 
 const boton = document.getElementById("btnConsultar");
 const secreto = document.getElementById("secreto");
 const resultado = document.getElementById("resultado");
 
 boton.addEventListener("click", async () => {
-  resultado.textContent = "Validando...";
+  const palabraSecreta = secreto.value.trim();
 
-  const esValido = await validarSecreto(DNI, secreto.value);
+  resultado.innerText = "Validando...";
 
-  if (!esValido) {
-    resultado.textContent = "Palabra secreta incorrecta.";
+  const esValida = await validarSecreto(DNI, palabraSecreta);
+
+  if (!esValida) {
+    resultado.innerText = "Palabra secreta incorrecta.";
     return;
   }
 
@@ -24,9 +26,6 @@ boton.addEventListener("click", async () => {
 
   const proximo = calcularProximoFeriado(feriados);
 
-  resultado.innerHTML = `
-    <h3>Próximo feriado</h3>
-    <p><strong>${proximo.nombre}</strong></p>
-    <p>${proximo.fecha}</p>
-  `;
+  resultado.innerText =
+    `Próximo feriado: ${proximo.fecha}\n${proximo.nombre}`;
 });
