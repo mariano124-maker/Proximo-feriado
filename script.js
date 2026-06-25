@@ -7,50 +7,47 @@ const DNI = "45468644";
 const secreto = document.getElementById("secreto");
 const resultado = document.getElementById("resultado");
 
+let esperandoReinicio = false;
+
 async function consultar() {
+  const palabraSecreta = secreto.value.trim();
 
-    const palabraSecreta = secreto.value.trim();
+  resultado.innerText = "Validando...";
 
-    resultado.innerText = "Validando...";
+  const esValida = await validarSecreto(DNI, palabraSecreta);
 
-    const esValida = await validarSecreto(DNI, palabraSecreta);
+  if (!esValida) {
+    resultado.innerText = "Palabra secreta incorrecta.";
+    return;
+  }
 
-    if (!esValida) {
-        resultado.innerText = "Palabra secreta incorrecta.";
-        return;
-    }
+  const feriados = await obtenerJson(
+    "https://api.argentinadatos.com/v1/feriados/"
+  );
 
-    const feriados = await obtenerJson(
-        "https://api.argentinadatos.com/v1/feriados/"
-    );
+  const proximo = calcularProximoFeriado(feriados);
 
-    const proximo = calcularProximoFeriado(feriados);
-
-    resultado.innerText =
+  resultado.innerText =
 `Próximo feriado: ${proximo.fecha}
 ${proximo.nombre}
 
-Presioná ENTER para volver a ingresar`;
+Presiona ENTER para volver a ingresar`;
+
+  esperandoReinicio = true;
 }
-let mostrarResultado = false;
 
-secreto.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
+secreto.addEventListener("keydown", async (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
 
-        if (mostrarResultado) {
-            secreto.value = "";
-            resultado.innerText = "";
-            mostrarResultado = false;
-            return;
-        }
-
-        consultar();
-        mostrarResultado = true;
+    if (esperandoReinicio) {
+      secreto.value = "";
+      resultado.innerText = "";
+      esperandoReinicio = false;
+      secreto.focus();
+      return;
     }
-});
 
-secreto.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        consultar();
-    }
+    await consultar();
+  }
 });
