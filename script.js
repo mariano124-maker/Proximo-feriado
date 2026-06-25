@@ -28,8 +28,8 @@ async function consultar() {
   const proximo = calcularProximoFeriado(feriados);
 
   resultado.innerText =
-`Próximo feriado: ${proximo.fecha}
-${proximo.nombre}
+`Proximo feriado: {proximo.fecha}
+{proximo.nombre}
 
 Presiona ENTER para volver a ingresar`;
 
